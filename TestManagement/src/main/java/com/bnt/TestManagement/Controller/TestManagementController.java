@@ -60,7 +60,7 @@ public class TestManagementController {
     ResponseEntity<Object> getMcqQuestionById(@PathVariable("id") int id){
         logger.info("Fetching MCQ question with ID: {}", id);
         Optional<McqQuestion> optionalMcqQuestion =testManageMentService.getMcqQuestionById(id);
-        logger.info("MCQ question with ID {} not found", id);
+        logger.info("MCQ question with ID {} found", id);
         return  new ResponseEntity<Object>(optionalMcqQuestion,HttpStatus.FOUND);
      }
 

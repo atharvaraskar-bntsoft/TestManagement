@@ -6,36 +6,28 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter
+
 @Setter
+@Getter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
-@Entity
-@Table(name = "mcq_question")
-public class McqQuestion {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY )
-    int  question_id ;
-
+public class SubCategory {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int subcategoryId;
+    
     @ManyToOne
-    @JoinColumn(name = "subcategoryId")
-    SubCategory subCategory;
-	String question;
-	String option_one;
-	String option_two;
-    String option_three;
-	String option_four ;
-	String correct_option;
-	int positive_mark;
-	int negative_mark;
+    @JoinColumn(name = "categoryId")
+    private Category category;   
+    private String subcategoryName;
+    private String subcategoryDescription;
 
 }
