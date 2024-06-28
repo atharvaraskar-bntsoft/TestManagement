@@ -54,6 +54,50 @@ To run the project locally, follow these steps:
 - Endpoint: `DELETE /testmangementapi/mcqquestions/{id}`
 - Deletes a specific MCQ question by its unique ID.
 
+### Category Management API Endpoints
+
+#### Create Category
+- Endpoint: `POST /testmangementapi/category`
+- Creates a new category with the specified name and description.
+
+#### Update Category
+- Endpoint: `PUT /testmangementapi/category`
+- Updates an existing category with the new name and description.
+
+#### Get All Categories
+- Endpoint: `GET /testmangementapi/category`
+- Retrieves a list of all categories.
+
+#### Get Category by ID
+- Endpoint: `GET /testmangementapi/category/{id}`
+- Retrieves the category details for the specified ID.
+
+#### Delete Category
+- Endpoint: `DELETE /testmangementapi/category/{id}`
+- Deletes the category identified by the specified ID.
+
+### Subcategory Management API Endpoints
+
+#### Create Subcategory
+- Endpoint: `POST /testmangementapi/subcategory`
+- Creates a new subcategory with the specified details.
+
+#### Update Subcategory
+- Endpoint: `PUT /testmangementapi/subcategory`
+- Updates an existing subcategory with the new details.
+
+#### Get All Subcategories
+- Endpoint: `GET /testmangementapi/subcategory`
+- Retrieves a list of all subcategories.
+
+#### Get Subcategory by ID
+- Endpoint: `GET /testmangementapi/subcategory/{id}`
+- Retrieves the details of a specific subcategory by its ID.
+
+#### Delete Subcategory
+- Endpoint: `DELETE /testmangementapi/subcategory/{id}`
+- Deletes a specific subcategory by its ID.
+
 
 ### Contribution
 Feel free to fork this repository, propose changes via pull requests, or report issues.
