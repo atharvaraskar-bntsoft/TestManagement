@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bnt.TestManagement.Exception.DuplicateDataException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Repository.CategoryRepository;
 
@@ -22,8 +23,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category saveCategory(Category category) {
+        Optional<Category> optionalSubCategory =categoryRepository.findByCategoryName(category.getCategoryName());
+        if(optionalSubCategory.isPresent()){
+              throw new DuplicateDataException("Catgory is already Present");
+        }
+        else{
         logger.info("Saving Category: {}", category);
         return categoryRepository .save(category);
+     }
     }
 
     @Override

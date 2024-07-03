@@ -3,6 +3,8 @@ package com.bnt.TestManagement.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bnt.TestManagement.Model.McqQuestion;
 
 public interface TestManageMentService {
@@ -15,5 +17,7 @@ public interface TestManageMentService {
     public McqQuestion updateMcqQuestion(McqQuestion mcqQuestion);
 
     public void deleteMcqQuestion(int id);
+
+   public void saveMcqQuestionsFromExcel(MultipartFile file);
 
 }

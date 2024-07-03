@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bnt.TestManagement.Model.McqQuestion;
 import com.bnt.TestManagement.Service.TestManageMentService;
@@ -72,6 +74,17 @@ public class TestManagementController {
             logger.info("Deleted MCQ question with ID: {}", id);
             return  new ResponseEntity<Object>("User Deleted Successfully",HttpStatus.OK);
         
+    }
+
+   @PostMapping("/uploadexcel")
+    public ResponseEntity<Object> bulkUploadQuestions(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return new ResponseEntity<>("Please upload an Excel file!", HttpStatus.BAD_REQUEST);
+        }
+
+        testManageMentService.saveMcqQuestionsFromExcel(file);
+
+        return new ResponseEntity<>("Bulk Data Transfer Succefully!", HttpStatus.CREATED);
     }
     
 

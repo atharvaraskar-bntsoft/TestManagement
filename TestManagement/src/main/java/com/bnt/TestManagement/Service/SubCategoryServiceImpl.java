@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.bnt.TestManagement.Exception.DuplicateDataException;
+import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.SubCategory;
+import com.bnt.TestManagement.Repository.CategoryRepository;
 import com.bnt.TestManagement.Repository.SubCategoryRepository;
 
 @Service
@@ -19,10 +21,18 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     @Autowired
     SubCategoryRepository subCategoryRepository;
 
+   
+
     @Override
     public SubCategory saveSubCategory(SubCategory subCategory) {
-        logger.info("Saving SubCategory: {}", subCategory);
-        return subCategoryRepository.save(subCategory);
+        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findBySubcategoryName(subCategory.getSubcategoryName());
+        if (optionalSubCategory.isPresent()) {
+            throw new DuplicateDataException("SubCatgory is already Present");
+        }  
+        else{
+            logger.info("Saving SubCategory: {}", subCategory);
+            return subCategoryRepository.save(subCategory);
+        }
     }
 
     @Override

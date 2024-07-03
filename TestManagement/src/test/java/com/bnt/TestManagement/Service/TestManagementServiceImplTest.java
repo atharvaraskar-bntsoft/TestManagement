@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.McqQuestion;
+import com.bnt.TestManagement.Model.SubCategory;
 import com.bnt.TestManagement.Repository.TestMangementRepository;
 
 @SpringBootTest
@@ -29,24 +31,38 @@ public class TestManagementServiceImplTest {
     @InjectMocks
     TestManagementServiceImpl testManagementServiceImpl;   
     
-    static McqQuestion Expectedata() {
+     static McqQuestion ExpectedData() {
+        
+        Category category = new Category();
+        category.setCategoryId(3); 
+        category.setCategoryName("Spring Boot");
+        category.setCategoryDescription("Spring Boot Framework category");
+
+        SubCategory subcategory = new SubCategory();
+        subcategory.setSubcategoryId(4); 
+        subcategory.setCategory(category);
+        subcategory.setSubcategoryName("Annotation");
+        subcategory.setSubcategoryDescription("Annotations in Spring");
+
         McqQuestion expectedQuestion = new McqQuestion();
         expectedQuestion.setQuestion_id(1);
-        expectedQuestion.setQuestion("What is Spring Boot?");
-        expectedQuestion.setOption_one("A Java framework");
-        expectedQuestion.setOption_two("A Spring project");
-        expectedQuestion.setOption_three("A Spring module");
-        expectedQuestion.setOption_four("An annotation");
-        expectedQuestion.setCorrect_option("A Spring project");
+        expectedQuestion.setSubCategory(subcategory); 
+        expectedQuestion.setQuestion("In Spring Boot @RestController annotation is equivalent to");
+        expectedQuestion.setOption_one("@Controller and @PostMapping");
+        expectedQuestion.setOption_two("@Controller and @Component");
+        expectedQuestion.setOption_three("@Controller and @ResponseBody");
+        expectedQuestion.setOption_four("@Controller and @ResponseStatus");
+        expectedQuestion.setCorrect_option("@Controller and @ResponseBody");
         expectedQuestion.setPositive_mark(3);
         expectedQuestion.setNegative_mark(-1);
+
         return expectedQuestion;
     }
 
 
     @Test
     void testSaveMcqQuestion() {
-        McqQuestion expectedQuestion = Expectedata();
+        McqQuestion expectedQuestion = ExpectedData();
         when(testMangementRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
         McqQuestion savedQuestion = testManagementServiceImpl.saveMcqQuestion(expectedQuestion);
         assertEquals(expectedQuestion, savedQuestion);
@@ -57,7 +73,7 @@ public class TestManagementServiceImplTest {
     @Test
     void testGetMcqQuestionById() {
         int id = 1;
-        McqQuestion expectedQuestion = Expectedata();
+        McqQuestion expectedQuestion = ExpectedData();
 
         when(testMangementRepository.findById(id)).thenReturn(Optional.of(expectedQuestion));
 
@@ -70,7 +86,7 @@ public class TestManagementServiceImplTest {
     @Test
     void testGetAllEMcqQuestions() {
         List<McqQuestion> expectedQuestions = new ArrayList<>();
-        expectedQuestions.add(Expectedata());
+        expectedQuestions.add(ExpectedData());
         when(testMangementRepository.findAll()).thenReturn(expectedQuestions);
         List<McqQuestion> retrievedQuestions = testManagementServiceImpl.getAllEMcqQuestions();
         assertEquals(expectedQuestions, retrievedQuestions);
@@ -79,7 +95,7 @@ public class TestManagementServiceImplTest {
 
     @Test
     void testUpdateMcqQuestion() {
-        McqQuestion expectedQuestion = Expectedata();
+        McqQuestion expectedQuestion = ExpectedData();
 
         when(testMangementRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
 
