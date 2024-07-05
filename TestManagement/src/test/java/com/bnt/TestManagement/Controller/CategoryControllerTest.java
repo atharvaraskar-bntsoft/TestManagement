@@ -32,7 +32,7 @@ public class CategoryControllerTest {
     @InjectMocks
      CategoryController categoryController;
 
-     static Category  ExpectedData(){
+     public Category  ExpectedData(){
         Category expectedCategory=new Category();
         expectedCategory.setCategoryId(1);
         expectedCategory.setCategoryName("Java");
@@ -44,13 +44,10 @@ public class CategoryControllerTest {
         @Test
         void saveCategoryTest(){
             Category expectedCategory = ExpectedData();
-
             when(categoryService.saveCategory(expectedCategory)).thenReturn(expectedCategory);  
-            ResponseEntity<Category> responseEntity = categoryController.createCategory(expectedCategory);
-    
+            ResponseEntity<Category> responseEntity = categoryController.createCategory(expectedCategory); 
             assertEquals(CREATED, responseEntity.getStatusCode());
             assertEquals(expectedCategory, responseEntity.getBody());
-
      }
 
      @Test
@@ -66,8 +63,7 @@ public class CategoryControllerTest {
          int id = 1;
          Category expectedCategory = ExpectedData();
          Optional<Category> optionalCategory = Optional.of(expectedCategory);
-         when(categoryService.getCategoryById(id)).thenReturn(optionalCategory);
-     
+         when(categoryService.getCategoryById(id)).thenReturn(optionalCategory);   
          ResponseEntity<Optional<Category>>actualresponseEntity = categoryController.getCategoryById(id);
          assertEquals(FOUND, actualresponseEntity.getStatusCode());     
      }
@@ -78,7 +74,6 @@ public class CategoryControllerTest {
         expectedCategories.add(ExpectedData());
         when(categoryService.getAllCategories()).thenReturn(expectedCategories);
         ResponseEntity<List<Category>> responseEntity = categoryController.getAllCategories();
-
         assertEquals(FOUND, responseEntity.getStatusCode());
         assertSame(expectedCategories, responseEntity.getBody());
     }
@@ -88,7 +83,6 @@ public class CategoryControllerTest {
         int id = 1;
         doNothing().when(categoryService).deleteCategory(id);
         ResponseEntity<Object> responseEntity = categoryController.deleteCategory(id);
-
         assertEquals(OK, responseEntity.getStatusCode());
         assertEquals("Category Deleted Successfully", responseEntity.getBody());
     }

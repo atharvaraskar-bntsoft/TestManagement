@@ -1,7 +1,6 @@
 package com.bnt.TestManagement.Controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.SubCategory;
 import com.bnt.TestManagement.Service.SubCategoryService;
+import java.util.Optional;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -32,17 +32,16 @@ public class SubCategoryControllerTest {
     @InjectMocks
     SubCategoryController subCategoryController;
 
-     static SubCategory createSampleSubCategory() {
+     public SubCategory createSampleSubCategory() {
         Category category = new Category(1, "Java", "Core Java category");
         return new SubCategory(1, category, "Collections", "Collections from Java");
     }
 
     @Test
-    void CreateSubCategorytest() {
+    void CreateSubCategoryTest() {
         SubCategory expectedSubCategory = createSampleSubCategory();
-        when(subCategoryService.saveSubCategory(any(SubCategory.class))).thenReturn(expectedSubCategory);
+        when(subCategoryService.saveSubCategory(expectedSubCategory)).thenReturn(expectedSubCategory);
         ResponseEntity<SubCategory> responseEntity = subCategoryController.createubCategory(expectedSubCategory);
-
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals(expectedSubCategory, responseEntity.getBody());
     }
@@ -50,31 +49,39 @@ public class SubCategoryControllerTest {
         
 
     @Test
-    void testGetAllSubCategories() {
+    void GetAllSubCategoriesTest() {
         List<SubCategory> expectedSubCategories = new ArrayList<>();
         expectedSubCategories.add(createSampleSubCategory());
         when(subCategoryService.getAllSubCategories()).thenReturn(expectedSubCategories);
         ResponseEntity<List<SubCategory>> responseEntity = subCategoryController.getAllSubCategories();
-
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
         assertEquals(expectedSubCategories, responseEntity.getBody());
     }
 
     @Test
-    void testUpdateSubCategory() {
-        SubCategory subCategoryToUpdate = createSampleSubCategory();
-        when(subCategoryService.updateSubCategory(any(SubCategory.class))).thenReturn(subCategoryToUpdate);
-        ResponseEntity<SubCategory> responseEntity = subCategoryController.updateSubCategory(subCategoryToUpdate);
+    void getSubCategoryByIdTest() {
+        int id = 1;
+        SubCategory expectedSubCategory = createSampleSubCategory();
+        Optional<SubCategory> optionalSubCategory = Optional.of(expectedSubCategory);
+        when(subCategoryService.getSubCategoryById(id)).thenReturn(optionalSubCategory);
+        ResponseEntity<Optional<SubCategory>> responseEntity = subCategoryController.getSubCategoryById(id);
+        assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
+        assertEquals(optionalSubCategory, responseEntity.getBody());
+    }
 
+    @Test
+    void UpdateSubCategoryTest() {
+        SubCategory subCategoryToUpdate = createSampleSubCategory();
+        when(subCategoryService.updateSubCategory(subCategoryToUpdate)).thenReturn(subCategoryToUpdate);
+        ResponseEntity<SubCategory> responseEntity = subCategoryController.updateSubCategory(subCategoryToUpdate);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subCategoryToUpdate, responseEntity.getBody());
     }
 
     @Test
-    void testDeleteSubCategory() {
+    void DeleteSubCategoryTest() {
         int subCategoryId = 1;
         ResponseEntity<Object> responseEntity = subCategoryController.deleteSubCategory(subCategoryId);
-
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Subcategory Deleted Successfully", responseEntity.getBody());
         verify(subCategoryService, times(1)).deleteSubCategory(subCategoryId);

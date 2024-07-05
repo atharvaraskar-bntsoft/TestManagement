@@ -31,7 +31,7 @@ public class SubCategoryServiceImplTest {
     @InjectMocks
     SubCategoryServiceImpl subCategoryServiceImpl; 
 
-    static SubCategory ExpectedData() {
+    public SubCategory ExpectedData() {
         Category category = new Category(1, "Java", "Core Java category");
         return new SubCategory(1, category, "Collections", "Collections from Java");
     }
@@ -75,8 +75,8 @@ public class SubCategoryServiceImplTest {
     @Test
     void UpdateSubCategoryTest() {
         SubCategory expectedSubCategory = ExpectedData();
+        when(subCategoryRepository.findById(expectedSubCategory.getSubcategoryId())).thenReturn(Optional.of(expectedSubCategory));
         when(subCategoryRepository.save(expectedSubCategory)).thenReturn(expectedSubCategory);
-
         SubCategory updatedSubCategory = subCategoryServiceImpl.updateSubCategory(expectedSubCategory);
         assertEquals(expectedSubCategory, updatedSubCategory);
         verify(subCategoryRepository, times(1)).save(expectedSubCategory);
@@ -87,6 +87,8 @@ public class SubCategoryServiceImplTest {
     @Test
     void testDeleteSubCategory() {
         int id = 1;
+        SubCategory expectedSubCategory = ExpectedData();
+        when(subCategoryRepository.findById(id)).thenReturn(Optional.of(expectedSubCategory));
         subCategoryServiceImpl.deleteSubCategory(id);
         verify(subCategoryRepository, times(1)).deleteById(id);
     }

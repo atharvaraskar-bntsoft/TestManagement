@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bnt.TestManagement.Model.McqQuestion;
 
-public interface TestManageMentService {
+public interface McqQuestionService {
     public McqQuestion saveMcqQuestion( McqQuestion mcqQuestion);
 
     public Optional<McqQuestion> getMcqQuestionById(int id);

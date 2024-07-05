@@ -15,15 +15,14 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Entity
 public class SubCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int subcategoryId;
-    
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;   

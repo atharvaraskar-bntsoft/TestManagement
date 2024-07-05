@@ -31,7 +31,7 @@ public class CategoryServiceTestImpl {
     @InjectMocks
     CategoryServiceImpl categoryServiceImpl;  
 
-         static Category  ExpectedData(){
+      public Category  ExpectedData(){
         Category expectedCategory=new Category();
         expectedCategory.setCategoryId(1);
         expectedCategory.setCategoryName("Java");
@@ -43,7 +43,6 @@ public class CategoryServiceTestImpl {
     void SaveCategoryTest() {
         Category expectedCategory = ExpectedData();
         when(categoryRepository.save(expectedCategory)).thenReturn(expectedCategory);
-
         Category savedCategory = categoryServiceImpl.saveCategory(expectedCategory);
         assertEquals(expectedCategory, savedCategory);
         verify(categoryRepository, times(1)).save(expectedCategory);
@@ -64,21 +63,19 @@ void GetCategoryByIdTest() {
 }
 
     @Test
-    void GetAllCategoriestest() {
+    void GetAllCategoriesTest() {
         List<Category> expectedCategories = new ArrayList<>();
         expectedCategories.add(ExpectedData());
-
         when(categoryRepository.findAll()).thenReturn(expectedCategories);
-
         List<Category> retrievedCategories = categoryServiceImpl.getAllCategories();
-
         assertEquals(expectedCategories, retrievedCategories);
         verify(categoryRepository, times(1)).findAll();
     }
 
     @Test
-    void testUpdateCategory() {
+    void UpdateCategoryTest() {
         Category expectedCategory = ExpectedData();
+        when(categoryRepository.findById(expectedCategory.getCategoryId())).thenReturn(Optional.of(expectedCategory));
         when(categoryRepository.save(expectedCategory)).thenReturn(expectedCategory);
         Category updatedCategory = categoryServiceImpl.updateCategory(expectedCategory);
         assertEquals(expectedCategory, updatedCategory);
@@ -86,10 +83,11 @@ void GetCategoryByIdTest() {
     }
 
 
-
     @Test
     void DeleteCategoryTest() {
-        int id = 1;
+        int  id=1;
+        Category expectedCategory = ExpectedData();
+        when(categoryRepository.findById(id)).thenReturn(Optional.of(expectedCategory));
         categoryServiceImpl.deleteCategory(id);
         verify(categoryRepository, times(1)).deleteById(id);
     }

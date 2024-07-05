@@ -13,33 +13,46 @@ public class GlobalExceptionHandler {
     Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ExcelProcessingException.class)
-     public void handleExcelProcessingException(ExcelProcessingException ex) {
-        logger.error("Global exception handler caught an exception:", ex.getMessage());;
+    public ResponseEntity<String> handleExcelProcessingException(ExcelProcessingException ex) {
+        logger.error("Excel processing exception occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing Excel file");
     }
 
-     
     @ExceptionHandler(CategoryNotFoundException.class)
-    public void handleCategoryNotFoundException(CategoryNotFoundException ex) {
+    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         logger.error("Category not found exception occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(SubCategoryNotFoundException.class)
-    public void handleSubCategoryNotFoundException(SubCategoryNotFoundException ex) {
+    public ResponseEntity<String> handleSubCategoryNotFoundException(SubCategoryNotFoundException ex) {
         logger.error("SubCategory not found exception occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(CategorySubCategoryMismatchException.class)
-    public void handleCategorySubCategoryMismatchException(CategorySubCategoryMismatchException ex) {
+    public ResponseEntity<String> handleCategorySubCategoryMismatchException(CategorySubCategoryMismatchException ex) {
         logger.error("Category and SubCategory mismatch exception: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(DuplicateDataException.class)
-    public void handleDuplicateData ( DuplicateDataException ex) {
+    public ResponseEntity<String> handleDuplicateData(DuplicateDataException ex) {
         logger.error("Duplicate Data Detected: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
- 
+    @ExceptionHandler(DataIsNullException.class)
+    public ResponseEntity<String> handleDataIsNullException(DataIsNullException ex) {
+        logger.error("Null data detected: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
+    @ExceptionHandler(IdNotFoundException.class)
+    public ResponseEntity<String> handleIdNotFoundException(IdNotFoundException ex) {
+        logger.error("ID not found exception occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 
 
 }

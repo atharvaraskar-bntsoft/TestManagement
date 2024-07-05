@@ -19,19 +19,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.McqQuestion;
 import com.bnt.TestManagement.Model.SubCategory;
-import com.bnt.TestManagement.Repository.TestMangementRepository;
+import com.bnt.TestManagement.Repository.McqQuestionRepository;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class TestManagementServiceImplTest {
+public class McqQuestionServiceImplTest {
 
      @Mock
-     TestMangementRepository testMangementRepository;
+     McqQuestionRepository mcqQuestionRepository;
 
     @InjectMocks
-    TestManagementServiceImpl testManagementServiceImpl;   
+    McqQuestionServiceImpl mcqQuestionServiceImpl;   
     
-     static McqQuestion ExpectedData() {
+     public McqQuestion ExpectedData() {
         
         Category category = new Category();
         category.setCategoryId(3); 
@@ -63,10 +63,10 @@ public class TestManagementServiceImplTest {
     @Test
     void testSaveMcqQuestion() {
         McqQuestion expectedQuestion = ExpectedData();
-        when(testMangementRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
-        McqQuestion savedQuestion = testManagementServiceImpl.saveMcqQuestion(expectedQuestion);
+        when(mcqQuestionRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
+        McqQuestion savedQuestion = mcqQuestionServiceImpl.saveMcqQuestion(expectedQuestion);
         assertEquals(expectedQuestion, savedQuestion);
-        verify(testMangementRepository, times(1)).save(expectedQuestion);
+        verify(mcqQuestionRepository, times(1)).save(expectedQuestion);
 
     }
      
@@ -74,43 +74,39 @@ public class TestManagementServiceImplTest {
     void testGetMcqQuestionById() {
         int id = 1;
         McqQuestion expectedQuestion = ExpectedData();
-
-        when(testMangementRepository.findById(id)).thenReturn(Optional.of(expectedQuestion));
-
-        Optional<McqQuestion> retrievedQuestion = testManagementServiceImpl.getMcqQuestionById(id);
-
+        when(mcqQuestionRepository.findById(id)).thenReturn(Optional.of(expectedQuestion));
+        Optional<McqQuestion> retrievedQuestion = mcqQuestionServiceImpl.getMcqQuestionById(id);
         assertEquals(expectedQuestion, retrievedQuestion.orElse(null));
-        verify(testMangementRepository, times(1)).findById(id);
+        verify(mcqQuestionRepository, times(1)).findById(id);
     }
 
     @Test
     void testGetAllEMcqQuestions() {
         List<McqQuestion> expectedQuestions = new ArrayList<>();
         expectedQuestions.add(ExpectedData());
-        when(testMangementRepository.findAll()).thenReturn(expectedQuestions);
-        List<McqQuestion> retrievedQuestions = testManagementServiceImpl.getAllEMcqQuestions();
+        when(mcqQuestionRepository.findAll()).thenReturn(expectedQuestions);
+        List<McqQuestion> retrievedQuestions = mcqQuestionServiceImpl.getAllEMcqQuestions();
         assertEquals(expectedQuestions, retrievedQuestions);
-        verify(testMangementRepository, times(1)).findAll();
+        verify(mcqQuestionRepository, times(1)).findAll();
     }
 
     @Test
     void testUpdateMcqQuestion() {
         McqQuestion expectedQuestion = ExpectedData();
-
-        when(testMangementRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
-
-        McqQuestion updatedQuestion = testManagementServiceImpl.updateMcqQuestion(expectedQuestion);
-
+        when(mcqQuestionRepository.findById(expectedQuestion.getQuestion_id())).thenReturn(Optional.of(expectedQuestion));
+        when(mcqQuestionRepository.save(expectedQuestion)).thenReturn(expectedQuestion);
+        McqQuestion updatedQuestion = mcqQuestionServiceImpl.updateMcqQuestion(expectedQuestion);
         assertEquals(expectedQuestion, updatedQuestion);
-        verify(testMangementRepository, times(1)).save(expectedQuestion);
+        verify(mcqQuestionRepository, times(1)).save(expectedQuestion);
     }
 
 
     @Test
     void testDeleteEmployeeService() {
            int id=1;
-           testManagementServiceImpl.deleteMcqQuestion(id);   
-            verify(testMangementRepository, times(1)).deleteById(id);
+           when(mcqQuestionRepository.findById(id)).thenReturn(Optional.of(ExpectedData()));
+           mcqQuestionServiceImpl.deleteMcqQuestion(id);   
+           verify(mcqQuestionRepository, times(1)).deleteById(id);
       }
 
     

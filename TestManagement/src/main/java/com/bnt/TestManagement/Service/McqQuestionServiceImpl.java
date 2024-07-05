@@ -18,11 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bnt.TestManagement.Repository.CategoryRepository;
 import com.bnt.TestManagement.Repository.SubCategoryRepository;
-import com.bnt.TestManagement.Repository.TestMangementRepository;
+import com.bnt.TestManagement.Repository.McqQuestionRepository;
 import com.bnt.TestManagement.Exception.CategoryNotFoundException;
 import com.bnt.TestManagement.Exception.CategorySubCategoryMismatchException;
-import com.bnt.TestManagement.Exception.DuplicateDataException;
+import com.bnt.TestManagement.Exception.DataIsNotPresentException;
+import com.bnt.TestManagement.Exception.DataIsNullException;
 import com.bnt.TestManagement.Exception.ExcelProcessingException;
+import com.bnt.TestManagement.Exception.IdNotFoundException;
 import com.bnt.TestManagement.Exception.SubCategoryNotFoundException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.McqQuestion;
@@ -30,12 +32,12 @@ import com.bnt.TestManagement.Model.SubCategory;
 
 
 @Service
-public class TestManagementServiceImpl implements TestManageMentService {
+public class McqQuestionServiceImpl implements McqQuestionService {
     
-     Logger logger=LoggerFactory.getLogger(TestManagementServiceImpl.class);
+     Logger logger=LoggerFactory.getLogger(McqQuestionServiceImpl.class);
    
     @Autowired
-    TestMangementRepository testMangementRepository;
+    McqQuestionRepository mcqQuestionRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -44,35 +46,52 @@ public class TestManagementServiceImpl implements TestManageMentService {
     private SubCategoryRepository subCategoryRepository;
 
     @Override
-    public McqQuestion saveMcqQuestion(McqQuestion mcqQuestion) {                     
+    public McqQuestion saveMcqQuestion(McqQuestion mcqQuestion) {
+        if (mcqQuestion == null || mcqQuestion.getQuestion()==null) {
+              throw new DataIsNullException("Data cannot be null");
+         }                     
         logger.info("Saving MCQ Question: {}", mcqQuestion);
-        return testMangementRepository .save(mcqQuestion);
-    
+        return mcqQuestionRepository .save(mcqQuestion);  
     }
 
     @Override
     public Optional<McqQuestion> getMcqQuestionById(int id) {
-        logger.info("Fetching MCQ Question with ID: {}", id);
-        Optional<McqQuestion> optionalQuestion = testMangementRepository.findById(id);
+        Optional<McqQuestion> optionalQuestion  = mcqQuestionRepository.findById(id);
+        if (!optionalQuestion .isPresent()) {
+            throw new IdNotFoundException("Id Not Found");
+        }
+        logger.info("Fetching Data with ID: {}", id);
         return optionalQuestion;               
     }
 
     @Override
     public List<McqQuestion> getAllEMcqQuestions() {
+        List<McqQuestion> mcqQuestions = mcqQuestionRepository.findAll();
+        if (mcqQuestions.isEmpty()) {
+            throw new DataIsNotPresentException("No MCQ questions found");
+        }
         logger.info("Fetching all MCQ Questions");
-        return testMangementRepository.findAll();
+        return mcqQuestions;
     }
 
     @Override
     public McqQuestion updateMcqQuestion(McqQuestion mcqQuestion) {
+        Optional<McqQuestion> optionalQuestion  = mcqQuestionRepository.findById(mcqQuestion.getQuestion_id());
+        if (!optionalQuestion .isPresent()) {
+            throw new IdNotFoundException("Id Not Found");
+        }
         logger.info("Updating MCQ Question: {}", mcqQuestion);
-        return testMangementRepository.save(mcqQuestion);
+        return mcqQuestionRepository.save(mcqQuestion);
     }
 
     @Override
     public void deleteMcqQuestion(int id) {
+        Optional<McqQuestion> optionalQuestion  = mcqQuestionRepository.findById(id);
+        if (!optionalQuestion.isPresent()) {
+            throw new IdNotFoundException("Id Not Found");
+        }
         logger.info("Deleting MCQ Question with ID: {}", id);
-        testMangementRepository.deleteById(id);        
+        mcqQuestionRepository.deleteById(id);        
     }
 
     
@@ -80,19 +99,13 @@ public class TestManagementServiceImpl implements TestManageMentService {
     public void saveMcqQuestionsFromExcel(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            Iterator<Row> rows = sheet.iterator();
-    
-            List<McqQuestion> questions = new ArrayList<>();
-    
+            Iterator<Row> rows = sheet.iterator(); 
+            List<McqQuestion> questions = new ArrayList<>();   
             while (rows.hasNext()) {
-                Row currentRow = rows.next();
-    
-            
+                Row currentRow = rows.next();          
                 if (currentRow.getRowNum() == 0) {
                     continue;
-                }
-    
-               
+                }             
                 String categoryName = getStringValue(currentRow.getCell(1));
                 String subCategoryName = getStringValue(currentRow.getCell(2));
                 String questionText = getStringValue(currentRow.getCell(3));
@@ -101,7 +114,6 @@ public class TestManagementServiceImpl implements TestManageMentService {
                 String optionThree = getStringValue(currentRow.getCell(6));
                 String optionFour = getStringValue(currentRow.getCell(7));
                 String correctOption = getStringValue(currentRow.getCell(8));
-    
                 int positiveMark;
                 if (currentRow.getCell(9).getCellType() == CellType.NUMERIC) {
                     positiveMark = (int) currentRow.getCell(9).getNumericCellValue();
@@ -109,7 +121,6 @@ public class TestManagementServiceImpl implements TestManageMentService {
                     positiveMark = Integer.parseInt(currentRow.getCell(9).getStringCellValue());
                   
                 }
-    
                 int negativeMark;
                 if (currentRow.getCell(10).getCellType() == CellType.NUMERIC) {
                     negativeMark = (int) currentRow.getCell(10).getNumericCellValue();
@@ -118,30 +129,27 @@ public class TestManagementServiceImpl implements TestManageMentService {
                 }
 
 
-                Optional<McqQuestion> existingQuestion = testMangementRepository.findByQuestion(questionText);
+                Optional<McqQuestion> existingQuestion = mcqQuestionRepository.findByQuestion(questionText);
                 if (existingQuestion.isPresent()) {
                     logger.warn("Skipping duplicate question: {}", questionText);
                     continue; 
                 }
-    
-                
+                 
                 Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryName);
                 if (!optionalCategory.isPresent()) {
                     throw new CategoryNotFoundException("Category not found: " + categoryName);
+                    
                 }
                 Category category = optionalCategory.get();
-    
-              
+                
                Optional<SubCategory> optionalSubCategory = subCategoryRepository.findBySubcategoryName(subCategoryName);
                 if (!optionalSubCategory.isPresent()) {
                     throw new SubCategoryNotFoundException("SubCategory not found " + subCategoryName);
                 }
                 SubCategory subCategory = optionalSubCategory.get();
                 
-
             if(subCategory.getCategory().getCategoryId()==category.getCategoryId()){
-
-                
+              
                 McqQuestion mcqQuestion = new McqQuestion();
                 mcqQuestion.setSubCategory(subCategory);
                 mcqQuestion.setQuestion(questionText);
@@ -159,10 +167,7 @@ public class TestManagementServiceImpl implements TestManageMentService {
                     throw  new CategorySubCategoryMismatchException(currentRow.getRowNum()); 
                 }
             }
-            
-    
-            // Save all McqQuestion objects
-            testMangementRepository.saveAll(questions);
+            mcqQuestionRepository.saveAll(questions);
     
         } catch (Exception e) {
             throw new ExcelProcessingException("Failed to process Excel file: " + e.getMessage());

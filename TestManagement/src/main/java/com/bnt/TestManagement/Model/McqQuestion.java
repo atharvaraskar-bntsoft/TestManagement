@@ -24,18 +24,17 @@ import lombok.ToString;
 public class McqQuestion {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
-    int  question_id ;
-
+    private int  question_id ;
     @ManyToOne
     @JoinColumn(name = "subcategoryId")
-    SubCategory subCategory;
-	String question;
-	String option_one;
-	String option_two;
-    String option_three;
-	String option_four ;
-	String correct_option;
-	int positive_mark;
-	int negative_mark;
+    private SubCategory subCategory;
+	private String question;
+	private String option_one;
+	private String option_two;
+    private String option_three;
+	private String option_four ;
+	private String correct_option;
+	private int positive_mark;
+	private int negative_mark;
 
 }

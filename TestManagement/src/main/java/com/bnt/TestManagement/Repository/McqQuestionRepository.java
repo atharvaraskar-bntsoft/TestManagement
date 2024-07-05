@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.bnt.TestManagement.Model.McqQuestion;
 
 @Repository
-public interface TestMangementRepository extends JpaRepository<McqQuestion,Integer>{
+public interface McqQuestionRepository extends JpaRepository<McqQuestion,Integer>{
     Optional<McqQuestion> findByQuestion(String question);
 
 }

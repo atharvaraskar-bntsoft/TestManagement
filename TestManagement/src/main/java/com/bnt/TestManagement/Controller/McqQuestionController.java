@@ -18,61 +18,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.bnt.TestManagement.Model.McqQuestion;
-import com.bnt.TestManagement.Service.TestManageMentService;
-
-
+import com.bnt.TestManagement.Service.McqQuestionService;
 
 
 @RestController
 @RequestMapping("/testmangementapi/mcqquestions")
-public class TestManagementController {
-    Logger logger=LoggerFactory.getLogger(TestManagementController.class);
+public class McqQuestionController {
+    Logger logger=LoggerFactory.getLogger(McqQuestionController.class);
     
      @Autowired
-     private  TestManageMentService testManageMentService;
+     private  McqQuestionService mcqQuestionService;
 
 
      @PostMapping
-     public ResponseEntity<Object> createMcqQuestion(@RequestBody McqQuestion mcqQuestion) {
+     public ResponseEntity<McqQuestion> createMcqQuestion(@RequestBody McqQuestion mcqQuestion) {
          logger.info("Creating MCQ question: {}", mcqQuestion);
-         McqQuestion createdQuestion = testManageMentService.saveMcqQuestion(mcqQuestion);
+         McqQuestion createdQuestion = mcqQuestionService.saveMcqQuestion(mcqQuestion);
          logger.info("Created MCQ question with ID: {}", createdQuestion.getQuestion_id());
          return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
      }
  
      @PutMapping
-     public ResponseEntity<Object> updateMcqQuestion(@RequestBody McqQuestion mcqQuestion) {
+     public ResponseEntity<McqQuestion> updateMcqQuestion(@RequestBody McqQuestion mcqQuestion) {
         logger.info("Updating MCQ question with ID: {}", mcqQuestion.getQuestion_id());
-         McqQuestion updatedQuestion = testManageMentService.updateMcqQuestion(mcqQuestion);
+         McqQuestion updatedQuestion = mcqQuestionService.updateMcqQuestion(mcqQuestion);
          logger.info("Updated MCQ question: {}", updatedQuestion);
          return new ResponseEntity<>(updatedQuestion, HttpStatus.OK);
      }
 
     @GetMapping
-     ResponseEntity<Object> getAllMcqQuestion(){
+     ResponseEntity<List<McqQuestion>> getAllMcqQuestion(){
         logger.info("Fetching all MCQ questions");
-        List<McqQuestion> list1= testManageMentService.getAllEMcqQuestions(); 
+        List<McqQuestion> list1= mcqQuestionService.getAllEMcqQuestions(); 
         logger.info("Fetched All MCQ questions");  
         return new ResponseEntity<>(list1,HttpStatus.FOUND);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Object> getMcqQuestionById(@PathVariable("id") int id){
+    ResponseEntity<Optional<McqQuestion>> getMcqQuestionById(@PathVariable("id") int id){
         logger.info("Fetching MCQ question with ID: {}", id);
-        Optional<McqQuestion> optionalMcqQuestion =testManageMentService.getMcqQuestionById(id);
+        Optional<McqQuestion> optionalMcqQuestion =mcqQuestionService.getMcqQuestionById(id);
         logger.info("MCQ question with ID {} found", id);
-        return  new ResponseEntity<Object>(optionalMcqQuestion,HttpStatus.FOUND);
+        return  new ResponseEntity<>(optionalMcqQuestion,HttpStatus.FOUND);
      }
 
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteMcqQuestion(@PathVariable("id") int id){
+    public ResponseEntity<String> deleteMcqQuestion(@PathVariable("id") int id){
             logger.info("Deleting MCQ question with ID: {}", id);
-            testManageMentService.deleteMcqQuestion(id);
+            mcqQuestionService.deleteMcqQuestion(id);
             logger.info("Deleted MCQ question with ID: {}", id);
-            return  new ResponseEntity<Object>("User Deleted Successfully",HttpStatus.OK);
+            return  new ResponseEntity<>("User Deleted Successfully",HttpStatus.OK);
         
     }
 
@@ -81,9 +78,7 @@ public class TestManagementController {
         if (file.isEmpty()) {
             return new ResponseEntity<>("Please upload an Excel file!", HttpStatus.BAD_REQUEST);
         }
-
-        testManageMentService.saveMcqQuestionsFromExcel(file);
-
+        mcqQuestionService.saveMcqQuestionsFromExcel(file);
         return new ResponseEntity<>("Bulk Data Transfer Succefully!", HttpStatus.CREATED);
     }
     
