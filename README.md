@@ -1,7 +1,7 @@
 # TestManagement API
 
 ## Overview
-This project implements a RESTful API for managing multiple-choice questions (MCQs) using Spring Boot. It provides endpoints to perform CRUD operations on MCQ questions.
+TestManagement simplifies the management of multiple-choice questions (MCQs) through a RESTful API implemented with Spring Boot. It enables CRUD operations on MCQs stored in a PostgreSQL database, providing robust features for efficient handling and ensuring streamlined operations. 
 
 ### Technologies Used
 - Java 21
@@ -15,7 +15,7 @@ The project is structured as follows:
 - Controller: Handles incoming HTTP requests, processes them, and returns a response.
 - Service: Contains business logic.
 - Model: Defines the structure of MCQ questions.
-- Repository: Interfaces for database operations (not shown explicitly in provided code).
+- Repository: Interfaces for database operations .
 
 ### Setup Instructions
 
@@ -26,12 +26,22 @@ To run the project locally, follow these steps:
    - Update the database configuration in `application.properties` file.
 
 2. Run the Application
-   - Open the project in your preferred IDE (e.g., IntelliJ IDEA, Eclipse).
+   - Open the project in your preferred IDE (e.g., IntelliJ IDE, Eclipse).
    - Run the `TestManagementApplication.java` class as a Java application.
 
-3. Testing the API
-   - Use Postman or any API testing tool to interact with the endpoints.
-   - Import the provided Postman API collection to quickly test each endpoint.
+
+## Clone the repository
+git clone https://github.com/atharvaraskar-bntsoft/TestManagement.git
+
+## Navigate into the cloned directory
+cd TestManagement
+
+## Build the project using Gradle wrapper
+./gradlew build
+
+## Run the application
+After building the project, you can run the application
+
 ### API Endpoints
 
 #### Create MCQ Question
