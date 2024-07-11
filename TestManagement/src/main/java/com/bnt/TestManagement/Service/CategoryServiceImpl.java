@@ -56,6 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
         logger.info("Fetching all Categories");
         return categories;
     }
+    
 
     @Override
     public Category updateCategory(Category category) {

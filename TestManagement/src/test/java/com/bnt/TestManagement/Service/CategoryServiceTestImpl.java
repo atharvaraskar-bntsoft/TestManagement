@@ -1,6 +1,7 @@
 package com.bnt.TestManagement.Service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.bnt.TestManagement.Exception.DataIsNotPresentException;
+import com.bnt.TestManagement.Exception.DuplicateDataException;
+import com.bnt.TestManagement.Exception.IdNotFoundException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Repository.CategoryRepository;
 
@@ -91,6 +95,56 @@ void GetCategoryByIdTest() {
         categoryServiceImpl.deleteCategory(id);
         verify(categoryRepository, times(1)).deleteById(id);
     }
+
+     @Test
+    void saveCategory_DuplicateCategoryTest() {
+        Category existingCategory = ExpectedData();    
+        when(categoryRepository.findByCategoryName(existingCategory.getCategoryName()))
+            .thenReturn(Optional.of(existingCategory));    
+        assertThrows(DuplicateDataException.class, () -> {
+            categoryServiceImpl.saveCategory(existingCategory); 
+        });
+     }
+
+    @Test
+    void getCategoryById_IdNotFoundTest() {
+        int id = 777;     
+        when(categoryRepository.findById(id)).thenReturn(Optional.empty());    
+        assertThrows(IdNotFoundException.class, () -> {
+            categoryServiceImpl.getCategoryById(id);
+        });
+    }
+
+    @Test
+    void getAllCategories_NoDataTest() {
+        List<Category> emptyList = new ArrayList<>();
+        when(categoryRepository.findAll()).thenReturn(emptyList);
+        assertThrows(DataIsNotPresentException.class, () -> {categoryServiceImpl.getAllCategories();});
+    }
+
+    
+
+    @Test
+    void updateCategory_IdNotFoundTest() {
+        Category nonExistingCategory = ExpectedData();
+        nonExistingCategory.setCategoryId(999); // Assuming ID 999 does not exist
+        
+        when(categoryRepository.findById(nonExistingCategory.getCategoryId())).thenReturn(Optional.empty());
+        
+        assertThrows(IdNotFoundException.class, () -> {
+            categoryServiceImpl.updateCategory(nonExistingCategory);
+        });
+}
+
+
+    @Test
+    void deleteCategory_IdNotFoundTest() {
+        int id = 888;    
+        when(categoryRepository.findById(id)).thenReturn(Optional.empty());   
+        assertThrows(IdNotFoundException.class, () -> {
+            categoryServiceImpl.deleteCategory(id);
+        });
+}
 
 
 

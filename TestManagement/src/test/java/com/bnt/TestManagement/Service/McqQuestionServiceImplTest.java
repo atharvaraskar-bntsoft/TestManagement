@@ -1,6 +1,8 @@
 package com.bnt.TestManagement.Service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.bnt.TestManagement.Exception.DataIsNotPresentException;
+import com.bnt.TestManagement.Exception.DataIsNullException;
+import com.bnt.TestManagement.Exception.IdNotFoundException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.McqQuestion;
 import com.bnt.TestManagement.Model.SubCategory;
@@ -108,6 +113,47 @@ public class McqQuestionServiceImplTest {
            mcqQuestionServiceImpl.deleteMcqQuestion(id);   
            verify(mcqQuestionRepository, times(1)).deleteById(id);
       }
+
+        @Test
+    void saveMcqQuestion_NullDataTest() {
+        McqQuestion nullQuestion = null;
+        assertThrows(DataIsNullException.class, () -> { mcqQuestionServiceImpl.saveMcqQuestion(nullQuestion); });
+        verify(mcqQuestionRepository, never()).save(nullQuestion);
+    }  
+
+    @Test
+    void UpdateMcqQuestion_IdNotFoundTest() {
+        McqQuestion expectedQuestion = ExpectedData();
+        expectedQuestion.setQuestion_id(999); 
+        when(mcqQuestionRepository.findById(expectedQuestion.getQuestion_id())).thenReturn(Optional.empty());
+        assertThrows(IdNotFoundException.class, () -> { mcqQuestionServiceImpl.updateMcqQuestion(expectedQuestion); });
+        verify(mcqQuestionRepository, never()).save(expectedQuestion);
+    }
+
+      @Test
+      void GetMcqQuestionById_IdNotFoundTest() {
+          int id = 1;
+          when(mcqQuestionRepository.findById(id)).thenReturn(Optional.empty());
+          assertThrows(IdNotFoundException.class, () -> {mcqQuestionServiceImpl.getMcqQuestionById(id); });
+        }
+    
+    @Test
+    void getAllEMcqQuestions_NoDataTest() {
+        List<McqQuestion> emptyList = new ArrayList<>();
+        when(mcqQuestionRepository.findAll()).thenReturn(emptyList);
+        assertThrows(DataIsNotPresentException.class, () -> { mcqQuestionServiceImpl.getAllEMcqQuestions(); });
+        verify(mcqQuestionRepository, times(1)).findAll();
+    }
+          
+
+    @Test
+    void DeleteMcqQuestion_IdNotFoundTest() {
+        int id = 999; 
+        when(mcqQuestionRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(IdNotFoundException.class, () ->{mcqQuestionServiceImpl.deleteMcqQuestion(id); }); 
+        verify(mcqQuestionRepository, never()).deleteById(id);
+    }
+
 
     
 

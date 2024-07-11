@@ -1,7 +1,9 @@
 package com.bnt.TestManagement.Service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +19,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.bnt.TestManagement.Exception.DataIsNotPresentException;
+import com.bnt.TestManagement.Exception.DuplicateDataException;
+import com.bnt.TestManagement.Exception.IdNotFoundException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Model.SubCategory;
 import com.bnt.TestManagement.Repository.SubCategoryRepository;
@@ -63,11 +68,8 @@ public class SubCategoryServiceImplTest {
      void GetAllSubCategoriesTest() {
         List<SubCategory> expectedSubCategories = new ArrayList<>();
         expectedSubCategories.add(ExpectedData());
-
         when(subCategoryRepository.findAll()).thenReturn(expectedSubCategories);
-
         List<SubCategory> retrievedSubCategories = subCategoryServiceImpl.getAllSubCategories();
-
         assertEquals(expectedSubCategories, retrievedSubCategories);
         verify(subCategoryRepository, times(1)).findAll();
     }
@@ -91,6 +93,52 @@ public class SubCategoryServiceImplTest {
         when(subCategoryRepository.findById(id)).thenReturn(Optional.of(expectedSubCategory));
         subCategoryServiceImpl.deleteSubCategory(id);
         verify(subCategoryRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void saveSubCategory_DuplicateSubCategoryTest() {
+        SubCategory subCategory = ExpectedData();
+        when(subCategoryRepository.findBySubcategoryName(subCategory.getSubcategoryName())).thenReturn(Optional.of(subCategory));
+        assertThrows(DuplicateDataException.class, () -> {
+            subCategoryServiceImpl.saveSubCategory(subCategory);
+        });
+        verify(subCategoryRepository, never()).save(subCategory);
+    }
+
+    @Test
+    void getSubCategoryById_IdNotFoundTest() {
+        int id = 999; 
+        when(subCategoryRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(IdNotFoundException.class, () -> {
+            subCategoryServiceImpl.getSubCategoryById(id);
+        });
+    }
+
+    @Test
+    void getAllSubCategories_NoDataTest() {
+        List<SubCategory> emptyList = new ArrayList<>();
+        when(subCategoryRepository.findAll()).thenReturn(emptyList);
+        assertThrows(DataIsNotPresentException.class,()-> {subCategoryServiceImpl.getAllSubCategories(); });    
+        }
+
+    @Test
+    void updateSubCategory_IdNotFoundTest() {
+        SubCategory nonExistingSubCategory = ExpectedData();
+        nonExistingSubCategory.setSubcategoryId(999); 
+        when(subCategoryRepository.findById(nonExistingSubCategory.getSubcategoryId())).thenReturn(Optional.empty());
+        assertThrows(IdNotFoundException.class, () -> {
+            subCategoryServiceImpl.updateSubCategory(nonExistingSubCategory);
+        });
+    }
+
+
+    @Test
+    void deleteSubCategory_IdNotFoundTest() {
+        int id = 999; 
+        when(subCategoryRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(IdNotFoundException.class, () -> {
+            subCategoryServiceImpl.deleteSubCategory(id);
+        });
     }
   
 

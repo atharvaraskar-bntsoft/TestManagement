@@ -54,7 +54,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
             throw new DataIsNotPresentException("No subcategories found");
         }
         logger.info("Fetching all SubCategories");
-        return subCategoryRepository.findAll();
+        return subCategories;
     }
 
     @Override
