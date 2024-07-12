@@ -2,7 +2,9 @@ package com.bnt.TestManagement.Controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
+import com.bnt.TestManagement.Exception.DataIsNotPresentException;
+import com.bnt.TestManagement.Exception.DataIsNullException;
+import com.bnt.TestManagement.Exception.IdNotFoundException;
 import com.bnt.TestManagement.Model.Category;
 import com.bnt.TestManagement.Service.CategoryService;
 import static org.springframework.http.HttpStatus.*;
@@ -87,9 +92,59 @@ public class CategoryControllerTest {
         assertEquals("Category Deleted Successfully", responseEntity.getBody());
     }
 
- 
+    @Test
+    void createCategory_NullCategoryTest() {
+        Category nullCategory = null;
+        when(categoryService.saveCategory(nullCategory)).thenThrow(new DataIsNullException("Category cannot be null"));
+        DataIsNullException exception = assertThrows(DataIsNullException.class, () -> {
+            categoryController.createCategory(nullCategory);
+        });
+        assertEquals("Category cannot be null", exception.getMessage());
+    }
 
 
+    @Test
+    void updateCategory_IdNotFoundTest() {
+        int id = 999;
+        String errorMessage = "Category not found with ID: " + id;
+        Category nonExistingIdCategory = new Category(id, "Python", "Description of python");
+        when(categoryService.updateCategory(nonExistingIdCategory)).thenThrow(new IdNotFoundException(errorMessage));
+        IdNotFoundException exception = assertThrows(IdNotFoundException.class, () -> {
+            categoryController.updateCategory(nonExistingIdCategory);
+        });
+        assertEquals(errorMessage, exception.getMessage());
+    }
+
+        @Test
+    void getAllCategories_EmptyListTest() {
+        when(categoryService.getAllCategories()).thenThrow(new DataIsNotPresentException("No categories found"));
+        DataIsNotPresentException exception = assertThrows(DataIsNotPresentException.class, () -> {
+            categoryController.getAllCategories();
+        });
+        assertEquals("No categories found", exception.getMessage());
+    }
+        
+        
+   @Test
+    void getCategoryById_IdNotFoundTest() {
+        int id = 999;
+        String errorMessage = "Category not found with ID: " + id;
+        doThrow(new IdNotFoundException(errorMessage)).when(categoryService).getCategoryById(id);
+        Exception exception = assertThrows(IdNotFoundException.class, () -> {
+            categoryController.getCategoryById(id); });
+        assertEquals(errorMessage, exception.getMessage());
+    }
+
+    @Test
+    void deleteCategory_IdNotFoundTest() {
+        int id = 999;
+        String errorMessage = "Category not found with ID: " + id;
+        doThrow(new IdNotFoundException(errorMessage)).when(categoryService).deleteCategory(id);
+        IdNotFoundException exception = assertThrows(IdNotFoundException.class, () -> {
+            categoryController.deleteCategory(id);
+        });
+        assertEquals(errorMessage, exception.getMessage());
+    }
 
 
 }

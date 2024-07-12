@@ -127,7 +127,7 @@ void GetCategoryByIdTest() {
     @Test
     void updateCategory_IdNotFoundTest() {
         Category nonExistingCategory = ExpectedData();
-        nonExistingCategory.setCategoryId(999); // Assuming ID 999 does not exist
+        nonExistingCategory.setCategoryId(999); 
         
         when(categoryRepository.findById(nonExistingCategory.getCategoryId())).thenReturn(Optional.empty());
         
